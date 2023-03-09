@@ -24,7 +24,7 @@ function traverse {
 
 traverse
 make test
-if [[ $? ]]; then
+if [[ $? = 0 ]]; then
   echo $?
   git commit -m\""$1"\"
   git push origin main
