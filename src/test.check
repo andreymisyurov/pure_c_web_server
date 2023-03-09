@@ -1,34 +1,84 @@
 #include <stdio.h>
 #include <string.h>
 #include <check.h>
-#include "s21_string.h"
+#include "./http_lib/http.h"
+#include "./parser_args/parser_args.h"
 
-#test s21_strlen_test
-const char* str1 = "stringForTest";
-const char* str2 = "stringFor\0Test";
-const char* str3 = "\nstringForTest";
-const char* str4 = "stringForTest\t";
-const char* str5 = "";
-const char* str6 = "1";
-const char* str7;
-ck_assert_int_eq(strlen(str1), s21_strlen(str1));
-ck_assert_int_eq(strlen(str2), s21_strlen(str2));
-ck_assert_int_eq(strlen(str3), s21_strlen(str3));
-ck_assert_int_eq(strlen(str4), s21_strlen(str4));
-ck_assert_int_eq(strlen(str5), s21_strlen(str5));
-ck_assert_int_eq(strlen(str6), s21_strlen(str6));
-ck_assert_int_eq(strlen(str7), s21_strlen(str7));
+#test func_check_file_1
+ck_assert_int_eq(check_file("./src/templates/hello.html"), 0);
 
-#test s21_strrchr_test
-const char* str1 = "stringForTest";
-const char* str2 = "stringFor\0Test";
-const char* str3 = "\nstringForTest";
-const char* str4 = "stringForTest\t";
-const char* str5 = "";
-const char* str6 = "1";
-ck_assert_pstr_eq(s21_strrchr(str1, 'g'), strrchr(str1, 'g'));
-ck_assert_pstr_eq(s21_strrchr(str2, 'i'), strrchr(str2, 'i'));
-ck_assert_pstr_eq(s21_strrchr(str3, '\n'), strrchr(str3, '\n'));
-ck_assert_pstr_eq(s21_strrchr(str4, '\t'), strrchr(str4, '\t'));
-ck_assert_pstr_eq(s21_strrchr(str5, 'n'), strrchr(str5, 'n'));
-ck_assert_pstr_eq(s21_strrchr(str6, '1'), strrchr(str6, '1'));
+#test func_check_file_2
+ck_assert_int_eq(check_file("./Makefile"), 1);
+
+#test func_check_file_3
+ck_assert_int_eq(check_file("./Makefile.html"), 2);
+
+#test func_check_file_4
+ck_assert_int_eq(check_file(""), 1);
+
+#test func_check_file_5
+ck_assert_int_eq(check_file(NULL), -2);
+
+#test func_parse_response_1
+HTTP_answer temp = parse_response("GET teststring.html HTTP/1.1\n");
+ck_assert_str_eq(temp.type, "GET");
+ck_assert_str_eq(temp.file, "teststring.html");
+ck_assert_str_eq(temp.proto, "HTTP/1.1");
+
+#test func_parse_response_2
+HTTP_answer temp = parse_response("DELETE teststring.html\n");
+ck_assert_str_eq(temp.type, "");
+ck_assert_str_eq(temp.file, "");
+ck_assert_str_eq(temp.proto, "");
+
+#test func_parse_response_3
+HTTP_answer temp = parse_response(NULL);
+ck_assert_str_eq(temp.type, "");
+ck_assert_str_eq(temp.file, "");
+ck_assert_str_eq(temp.proto, "");
+
+#test func_parse_response_4
+HTTP_answer temp = parse_response("");
+ck_assert_str_eq(temp.type, "");
+ck_assert_str_eq(temp.file, "");
+ck_assert_str_eq(temp.proto, "");
+
+#test func_parse_response_5
+HTTP_answer temp = parse_response("DELETEDELETE teststring.html HTTP/1.1\n");
+ck_assert_str_eq(temp.type, "");
+ck_assert_str_eq(temp.file, "");
+ck_assert_str_eq(temp.proto, "");
+
+#test func_parse_response_6
+HTTP_answer temp = parse_response("POST teststring.htmlteststring.htmlteststring.html HTTP/1.1\n");
+ck_assert_str_eq(temp.type, "POST");
+ck_assert_str_eq(temp.file, "teststring.htmlteststring.htmlteststring.html");
+ck_assert_str_eq(temp.proto, "HTTP/1.1");
+
+#test func_parse_response_7
+HTTP_answer temp = parse_response("DELETE teststring HTTP/1.1HTTP/1.1HTTP/1.1\n");
+ck_assert_str_eq(temp.type, "");
+ck_assert_str_eq(temp.file, "");
+ck_assert_str_eq(temp.proto, "");
+
+#test func_create_answer_1
+char* temp = create_answer("./src/templates/test.html");
+ck_assert_str_eq(temp, "HTTP/1.1 200 OK\nContent-Type: text/html\n\nHTML FOR TEST");
+free(temp);
+
+#test func_create_answer_2
+char* temp = create_answer(NULL);
+ck_assert_ptr_null(temp);
+
+#test func_create_answer_3
+char* temp = create_answer("");
+ck_assert_ptr_null(temp);
+
+#test func_pars_arg_1
+ck_assert_int_eq(is_dir_exists("."), 1);
+
+#test func_pars_arg_2
+ck_assert_int_eq(is_dir_exists("./"), 1);
+
+#test func_pars_arg_3
+ck_assert_int_eq(is_dir_exists("./no_exist_dir/"), 0);

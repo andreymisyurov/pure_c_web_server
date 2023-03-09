@@ -1,6 +1,6 @@
 #
-# Скрипт для пуша на репозиторий. Выравнивает код по Google-style.
-# Не дает запушить код, который не компилируется
+# Для пуша использую скрипт, который выравнивает в соответствии с Google-style.
+# Не дает запушить код, который не компилируется или не проходит тесты
 #
 
 path=$(pwd)/.clang-format
@@ -23,8 +23,8 @@ function traverse {
 }
 
 traverse
-make build
-if [ $? = 0 ]; then
+make test
+if [[ $? ]]; then
   echo $?
   git commit -m\""$1"\"
   git push origin main
