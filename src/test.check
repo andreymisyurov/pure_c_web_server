@@ -1,0 +1,34 @@
+#include <stdio.h>
+#include <string.h>
+#include <check.h>
+#include "s21_string.h"
+
+#test s21_strlen_test
+const char* str1 = "stringForTest";
+const char* str2 = "stringFor\0Test";
+const char* str3 = "\nstringForTest";
+const char* str4 = "stringForTest\t";
+const char* str5 = "";
+const char* str6 = "1";
+const char* str7;
+ck_assert_int_eq(strlen(str1), s21_strlen(str1));
+ck_assert_int_eq(strlen(str2), s21_strlen(str2));
+ck_assert_int_eq(strlen(str3), s21_strlen(str3));
+ck_assert_int_eq(strlen(str4), s21_strlen(str4));
+ck_assert_int_eq(strlen(str5), s21_strlen(str5));
+ck_assert_int_eq(strlen(str6), s21_strlen(str6));
+ck_assert_int_eq(strlen(str7), s21_strlen(str7));
+
+#test s21_strrchr_test
+const char* str1 = "stringForTest";
+const char* str2 = "stringFor\0Test";
+const char* str3 = "\nstringForTest";
+const char* str4 = "stringForTest\t";
+const char* str5 = "";
+const char* str6 = "1";
+ck_assert_pstr_eq(s21_strrchr(str1, 'g'), strrchr(str1, 'g'));
+ck_assert_pstr_eq(s21_strrchr(str2, 'i'), strrchr(str2, 'i'));
+ck_assert_pstr_eq(s21_strrchr(str3, '\n'), strrchr(str3, '\n'));
+ck_assert_pstr_eq(s21_strrchr(str4, '\t'), strrchr(str4, '\t'));
+ck_assert_pstr_eq(s21_strrchr(str5, 'n'), strrchr(str5, 'n'));
+ck_assert_pstr_eq(s21_strrchr(str6, '1'), strrchr(str6, '1'));
