@@ -30,7 +30,8 @@ int bind_socket(int server_socket, struct sockaddr_in *server_address) {
   if (bind(server_socket, (struct sockaddr *)server_address,
            sizeof(*server_address)) < 0) {
     printf("Error binding");
-    return -1;
+//    return -1;
+    exit(1);
   }
   return 0;
 }
@@ -41,7 +42,7 @@ void listen_http(int server_socket, char *path, func_ptr send_file) {
   int client_socket = accept(server_socket, NULL, NULL);
   while (client_socket != 0) {
     printf("Connection accepted\n");
-    send_file(client_socket, path);
+//    send_file(client_socket, path);
     close(client_socket);
     client_socket = accept(server_socket, NULL, NULL);
   }

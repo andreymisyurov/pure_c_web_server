@@ -1,3 +1,8 @@
+#
+# Скрипт для пуша на репозиторий. Выравнивает код по Google-style.
+# Не дает запушить код, который не компилируется
+#
+
 path=$(pwd)/.clang-format
 
 function traverse {
@@ -20,8 +25,11 @@ function traverse {
 traverse
 make build
 if [ $? = 0 ]; then
+  echo $?
   git commit -m\""$1"\"
   git push origin main
+else
+  echo "НЕ МОГУ ЗАПУШИТЬ КОД КОТОРЫЙ НЕ КОМПИЛИРУЕТСЯ"
 fi
 
 rm server.out

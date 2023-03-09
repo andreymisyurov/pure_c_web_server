@@ -31,6 +31,7 @@ HTTP_answer parse_response(char *in_str) {
 }
 
 int check_file(char *fullpath) {
+  printf("\n%s\n", fullpath);
   regex_t regex;
   int reti = regcomp(&regex, "\\.html$", REG_ICASE);
   if (reti) {
