@@ -128,7 +128,7 @@ END_TEST
 START_TEST(func_create_answer_2)
 {
 char* temp = create_answer(NULL);
-ck_assert_ptr_null(temp);
+ck_assert_ptr_eq(temp, NULL);
 
 }
 END_TEST
@@ -136,7 +136,7 @@ END_TEST
 START_TEST(func_create_answer_3)
 {
 char* temp = create_answer("");
-ck_assert_ptr_null(temp);
+ck_assert_ptr_eq(temp, NULL);
 
 }
 END_TEST

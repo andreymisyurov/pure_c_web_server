@@ -5,11 +5,10 @@
 #define MAX_CONNECTIONS 10
 
 int main(int argc, char *argv[]) {
-  struct arguments arguments = {8080, "./templates/"};
+  struct arguments arguments = {8085, "./src/templates/"};
   argp_parse(&argp, argc, argv, 0, 0, &arguments);
-  printf("Try to start server on port: %d\nRoot Directory: %s\n",
-         arguments.port, arguments.dir);
+  printf("Try to start server on port: %d\nRoot Directory: %s\n", arguments.port, arguments.dir);
   int server_socket = get_socket(arguments.port, MAX_CONNECTIONS);
-  listen_http(server_socket, arguments.dir, send_response);
+  if(server_socket > 0) listen_http(server_socket, arguments.dir, send_response);
   return 0;
 }

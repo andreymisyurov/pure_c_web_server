@@ -68,11 +68,11 @@ free(temp);
 
 #test func_create_answer_2
 char* temp = create_answer(NULL);
-ck_assert_ptr_null(temp);
+ck_assert_ptr_eq(temp, NULL);
 
 #test func_create_answer_3
 char* temp = create_answer("");
-ck_assert_ptr_null(temp);
+ck_assert_ptr_eq(temp, NULL);
 
 #test func_pars_arg_1
 ck_assert_int_eq(is_dir_exists("."), 1);

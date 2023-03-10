@@ -20,6 +20,7 @@ HTTP_answer parse_response(char *in_str);
 int check_file(char *fullpath);
 char *create_answer(char *full_path);
 void remove_html(int client_socket, char *full_path);
-void send_response(int client_socket, char *path);
+int send_response(int client_socket, char *path);
+void send_error_404(int client_socket);
 
 #endif  // _TYPE_HTTP_

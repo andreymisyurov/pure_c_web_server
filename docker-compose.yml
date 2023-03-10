@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  web_c:
+    container_name: server
+    image: web_c
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8085"
+    volumes:
+      - ${PWD}/src/templates:/server/src/templates

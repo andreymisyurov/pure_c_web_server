@@ -2,12 +2,12 @@
 
 HTTP_answer parse_response(char *in_str) {
   HTTP_answer result = {0};
-  if (!in_str || strlen(in_str) > BUFFER_SIZE) return result;
+  if(!in_str || strlen(in_str) > BUFFER_SIZE) return result;
   char temp_type[BUFFER_SIZE];
   char temp_file[BUFFER_SIZE];
   char temp_proto[BUFFER_SIZE];
   int count = sscanf(in_str, "%s %s %s", temp_type, temp_file, temp_proto);
-  if (count == 3 && strlen(temp_type) < 8 && strlen(temp_proto) < 16) {
+  if(count == 3 && strlen(temp_type) < 8 && strlen(temp_proto) < 16) {
     strcpy(result.type, temp_type);
     strcpy(result.file, temp_file);
     strcpy(result.proto, temp_proto);
@@ -16,43 +16,44 @@ HTTP_answer parse_response(char *in_str) {
 }
 
 int check_file(char *fullpath) {
-  if (!fullpath) return -2;
+  if(!fullpath) return -2;
   regex_t regex;
   int reti = regcomp(&regex, "\\.html$", REG_ICASE);
-  if (reti) {
+  if(reti) {
     regfree(&regex);
     return -1;
   }
 
   reti = regexec(&regex, fullpath, 0, NULL, 0);
   regfree(&regex);
-  if (reti) {
+  if(reti) {
     return 1;
   }
 
-  if (access(fullpath, F_OK) == -1) {
+  if(access(fullpath, F_OK) == -1) {
     return 2;
   }
   return 0;
 }
 
 char *create_answer(char *full_path) {
+  if(!full_path || !strlen(full_path)) return NULL;
   FILE *file = fopen(full_path, "r");
-  if (!file) {
+  if(!file) {
     fclose(file);
     return NULL;
   }
   char *result = calloc(BUFFER_SIZE * 10, sizeof(char));
   strcat(result, "HTTP/1.1 200 OK\nContent-Type: text/html\n\n");
 
-  if (!result) return NULL;
+  if(!result) return NULL;
   char *buffer = calloc(BUFFER_SIZE, sizeof(char));
-  if (!buffer) {
+  if(!buffer) {
     free(result);
     return NULL;
   }
 
-  while (fgets(buffer, BUFFER_SIZE, file)) {
+  while(fgets(buffer, BUFFER_SIZE, file)) {
     strcat(result, buffer);
     memset(buffer, 0, BUFFER_SIZE);
   }
@@ -63,57 +64,62 @@ char *create_answer(char *full_path) {
 }
 
 void remove_html(int client_socket, char *full_path) {
-  char fail[73] =
-      "HTTP/1.1 404 Not Found\nContent-Type: text/html\n\nCouldn't delete this "
-      "page";
-  char success[71] =
-      "HTTP/1.1 200 OK\nContent-Type: text/html\n\nThis page deleted "
-      "successfully";
+  char fail[85] = "HTTP/1.1 404 Not Found\nContent-Type: text/html\n\n<h1>Couldn't delete this page</h1>";
+  char success[71] = "HTTP/1.1 200 OK\nContent-Type: text/html\n\nThis page deleted "
+                     "successfully";
   int check_rm = remove(full_path);
-  if (check_rm == 0) {
+  if(check_rm == 0) {
     send(client_socket, success, strlen(success), 0);
   } else {
     send(client_socket, fail, strlen(fail), 0);
   }
 }
 
-void send_response(int client_socket, char *path) {
-  char *client_message = calloc(BUFFER_SIZE, sizeof(char));
-  if (!client_message) return;
+void send_error_404(int client_socket) {
+  char fail[78] = "HTTP/1.1 404 Not Found\nContent-Type: text/html\n\n<h1>404 Page Not Found</h1>";
+  send(client_socket, fail, strlen(fail), 0);
+}
 
+int send_file(int client_socket, char *full_path) {
+  char *result = create_answer(full_path);
+  if(!result) return -6;
+
+  int check_send = send(client_socket, result, strlen(result), 0);
+  free(result);
+  if(check_send < 0) perror("Error in send");
+  return 0;
+}
+
+int send_response(int client_socket, char *path) {
+  char *client_message = calloc(BUFFER_SIZE, sizeof(char));
+  if(!client_message) return -1;
   int read_size = recv(client_socket, client_message, BUFFER_SIZE, 0);
-  if (read_size <= 0) {
+  if(read_size <= 0) {
     free(client_message);
     perror("Error in recv");
-    return;
+    return -2;
   }
 
   HTTP_answer response_info = parse_response(client_message);
   free(client_message);
-  if (!strcmp(response_info.file, "/favicon.ico")) return;
+  if(!strcmp(response_info.file, "/favicon.ico")) return -7;
 
   char *full_path = calloc(BUFFER_SIZE, sizeof(char));
-  if (!full_path) return;
+  if(!full_path) return -3;
   sprintf(full_path, "%s%s", path, response_info.file);
-
-  if (check_file(full_path)) {
+  printf("%s\n", full_path);
+  if(check_file(full_path)) {
     free(full_path);
     perror("error in full_path: ");
-    return;
+    send_error_404(client_socket);
+    return -4;
   }
 
-  if (!strcmp(response_info.type, "DELETE")) {
+  if(!strcmp(response_info.type, "DELETE")) {
     remove_html(client_socket, full_path);
     free(full_path);
-    return;
+    return -5;
   }
-
-  char *result = create_answer(full_path);
-  free(full_path);
-  if (!result) return;
-
-  int check_send = send(client_socket, result, strlen(result), 0);
-  free(result);
-
-  if (check_send < 0) perror("Error in send");
+  int result = send_file(client_socket, full_path);
+  return result;
 }

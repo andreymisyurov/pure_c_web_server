@@ -40,9 +40,6 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         exit(-1);
       }
       strcpy(arguments->dir, arg);
-      if (arg[strlen(arg) - 1] != '/') {
-        strcat(arguments->dir, "/");
-      }
       break;
     }
     default:

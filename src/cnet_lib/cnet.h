@@ -8,7 +8,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-typedef void (*func_ptr)(int, char *);
+typedef int (*func_ptr)(int, char *);
 
 int get_socket(int port, int max_conn);
 
