@@ -1,5 +1,5 @@
-#ifndef _TYPE_HTTP_
-#define _TYPE_HTTP_
+#ifndef _HTTP_LIB_HTTP_
+#define _HTTP_LIB_HTTP_
 
 #include <arpa/inet.h>
 #include <regex.h>
@@ -23,4 +23,4 @@ void remove_html(int client_socket, char *full_path);
 int send_response(int client_socket, char *path);
 void send_error_404(int client_socket);
 
-#endif  // _TYPE_HTTP_
+#endif  // _HTTP_LIB_HTTP_

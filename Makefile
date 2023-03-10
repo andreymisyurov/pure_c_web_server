@@ -12,7 +12,7 @@ endif
 run: build
 	./server.out $(ARGS)
 
-build: clean server.o http.o cnet.o
+build: server.o http.o cnet.o
 	$(CC) ./server.o ./cnet.o ./http.o -o server.out $(LIBS) $(CFLAGS)
 
 test: build
