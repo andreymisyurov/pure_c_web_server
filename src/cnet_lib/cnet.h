@@ -10,11 +10,11 @@
 
 typedef int (*func_ptr)(int, char *);
 
-int get_socket(int port, int max_conn);
+int get_socket(int in_port, int in_max_conn);
 
 int create_socket();
-void set_options(int port, struct sockaddr_in *server_addr);
-int bind_socket(int server_socket, struct sockaddr_in *server_address);
-void listen_http(int server_socket, char *path, func_ptr send_file);
+void set_options(int in_port, struct sockaddr_in *out_server_addr);
+int bind_socket(int in_server_sock, struct sockaddr_in *in_server_add);
+void listen_http(int in_server_sock, char *in_path, func_ptr in_send_file_foo);
 
 #endif  // _EX_NET_H_
