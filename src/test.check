@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <check.h>
-#include "./http_lib/http.h"
-#include "./parser_args/parser_args.h"
+#include "./src/http_lib/http.h"
+#include "./src/parser_args/parser_args.h"
 
 #test func_check_file_1
 ck_assert_int_eq(check_file("./src/templates/hello.html"), 0);
