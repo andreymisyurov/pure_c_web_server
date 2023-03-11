@@ -3,3 +3,5 @@
 *.o
 *.out
 *.a
+pytests/__pycache__/
+pytests/mytests/

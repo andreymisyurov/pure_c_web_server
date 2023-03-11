@@ -2,12 +2,12 @@
 #define _CNET_LIB_CNET_H_
 
 #include <arpa/inet.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <errno.h>
 
 typedef int (*func_ptr)(int, char *);
 

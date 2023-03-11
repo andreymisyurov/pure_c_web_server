@@ -62,7 +62,7 @@ ck_assert_str_eq(temp.file, "");
 ck_assert_str_eq(temp.proto, "");
 
 #test func_create_answer_1
-char* temp = create_answer("./src/templates/test.html");
+char* temp = create_answer("./src/templates/test_dont_touch.html");
 ck_assert_str_eq(temp, "HTTP/1.1 200 OK\nContent-Type: text/html\n\nHTML FOR TEST");
 free(temp);
 

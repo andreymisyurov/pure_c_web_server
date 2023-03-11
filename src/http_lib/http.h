@@ -16,11 +16,13 @@ typedef struct HTTP_answer {
   char proto[16];
 } HTTP_answer;
 
-HTTP_answer parse_response(char *in_str);
+int send_response(int client_socket, char *path);
+int send_file(int in_client_sock, char *in_file_path);
+int check_response_info(int in_sock, char* in_message);
 int check_file(char *fullpath);
 char *create_answer(char *full_path);
-void remove_html(int client_socket, char *full_path);
-int send_response(int client_socket, char *path);
-void send_error_404(int client_socket);
+void remove_html(int in_client_socket, char *full_path);
+void send_error_404(int in_client_socket);
+HTTP_answer parse_response(char *in_str);
 
 #endif  // _HTTP_LIB_HTTP_
