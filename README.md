@@ -50,3 +50,14 @@ In this configuration, requests can be sent to machine port 8082, the server ins
 - `docker-test` run tests inside a Docker container<br>
 - `make create_lib` build a static library with functions from `cnet` and `http` modules<br>
 - `make clean` clear `.o`, `.out`, and `.a` files<br>
+
+### Multithreading
+Implemented using a ready-made thread pool with reliable documentation (downloaded from github: https://github.com/Pithikos/C-Thread-Pool.git)<br>
+The program automatically sets the number of processor cores.<br>
+Two targets have been added to the Makefile for multi-thread server play.<br>
+-`make run_multi`, `make build_multi` build and start servers with all necessary includes <br>
+Also, a delay of 1 second has been added to func, which create http response form, for clarity.<br>
+One load test has been added to pytest, which will run in one thread for 8 seconds, <br>
+and in the multi-threaded version 8 / n, where n is a count of your core.<br>
+To reproduce multithreading when deploying to a Docker container, edit the Dockerfile. <br>
+`CMD ["make", "run"]`, second argument should be `run_multi`. <br>

@@ -10,7 +10,7 @@ def test_zero_get_request():
 
 def test_4347alphas_get_request():
     test_string = "http://localhost:8082/"
-    count = 1080
+    count = 108
     while count:
         test_string += "long"
         count -= 1

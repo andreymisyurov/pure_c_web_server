@@ -1,15 +1,66 @@
 #include "http.h"
 
+#ifdef MULTI_TH
+void send_response(pair *in_pair) {
+  char *client_message = calloc(BUFFER_SIZE, sizeof(char));
+  if(!client_message) {
+    close(in_pair->cl_sock);
+    return;
+  }
+  int read_size = (int)recv(in_pair->cl_sock, client_message, BUFFER_SIZE, 0);
+  if(read_size <= 0) {
+    free(client_message);
+    perror("Error in recv");
+    close(in_pair->cl_sock);
+    return;
+  }
+
+  HTTP_answer response_info = parse_response(client_message);
+  free(client_message);
+  if(check_response_info(in_pair->cl_sock, response_info.file) != 0) {
+    close(in_pair->cl_sock);
+    return;
+  }
+
+  char *full_path = calloc(BUFFER_SIZE, sizeof(char));
+  if(!full_path) {
+    close(in_pair->cl_sock);
+    return;
+  }
+  sprintf(full_path, "%s%s", in_pair->path, response_info.file);
+
+  if(!strcmp(response_info.type, "DELETE")) {
+    remove_html(in_pair->cl_sock, full_path);
+    free(full_path);
+    close(in_pair->cl_sock);
+    return;
+  }
+
+  if(check_file(full_path)) {
+    free(full_path);
+    perror("error in full_path: ");
+    send_error_404(in_pair->cl_sock);
+    close(in_pair->cl_sock);
+    return;
+  }
+
+  send_file(in_pair->cl_sock, full_path);
+  free(full_path);
+  close(in_pair->cl_sock);
+  sleep(1);
+}
+
+#else
+
 int send_response(int in_client_sock, char *in_path) {
   char *client_message = calloc(BUFFER_SIZE, sizeof(char));
   if(!client_message) return -1;
-  int read_size = recv(in_client_sock, client_message, BUFFER_SIZE, 0);
+  int read_size = (int)recv(in_client_sock, client_message, BUFFER_SIZE, 0);
   if(read_size <= 0) {
     free(client_message);
     perror("Error in recv");
     return -2;
   }
-
   HTTP_answer response_info = parse_response(client_message);
   free(client_message);
   if(check_response_info(in_client_sock, response_info.file) != 0) return -7;
@@ -33,8 +84,11 @@ int send_response(int in_client_sock, char *in_path) {
 
   int result = send_file(in_client_sock, full_path);
   free(full_path);
+  sleep(1);
   return result;
 }
+
+#endif // MULTI_TH
 
 int send_file(int in_client_sock, char *in_file_path) {
   if(!in_file_path || !strlen(in_file_path)) return -8;
@@ -58,7 +112,7 @@ int check_response_info(int in_sock, char *in_message) {
     send_error_404(in_sock);
     return -1;
   }
-//  if(!strcmp(in_message, "/favicon.ico")) return -1;
+  //  if(!strcmp(in_message, "/favicon.ico")) return -1;
   return 0;
 }
 
@@ -92,9 +146,9 @@ char *create_answer(char *in_file_path) {
     return NULL;
   }
   char *result = calloc(BUFFER_SIZE * 10, sizeof(char));
-  strcat(result, "HTTP/1.1 200 OK\nContent-Type: text/html\n\n");
-
   if(!result) return NULL;
+
+  strcat(result, "HTTP/1.1 200 OK\nContent-Type: text/html\n\n");
   char *buffer = calloc(BUFFER_SIZE, sizeof(char));
   if(!buffer) {
     free(result);
@@ -136,4 +190,3 @@ HTTP_answer parse_response(char *in_str) {
   }
   return result;
 }
-
