@@ -7,10 +7,10 @@
 int main(int argc, char *argv[]) {
   struct arguments arguments = {8085, "./src/templates/"};
   argp_parse(&argp, argc, argv, 0, 0, &arguments);
-  printf("Try to start server on port: %d\nRoot Directory: %s\n", arguments.port, arguments.dir);
+  printf("Try to start server on port: %d\nRoot Directory: %s\n",
+         arguments.port, arguments.dir);
   int server_socket = get_socket(arguments.port, MAX_CONNECTIONS);
-  if(server_socket > 0) {
-
+  if (server_socket > 0) {
 #ifdef MULTI_TH
     printf("multi-thread run\n");
 #else

@@ -10,7 +10,7 @@
 
 #ifdef MULTI_TH
 #include "./../struct.h"
-#endif // MULTI_TH
+#endif  // MULTI_TH
 
 #define BUFFER_SIZE 2048
 
@@ -24,8 +24,7 @@ typedef struct HTTP_answer {
 void send_response(pair *in_pair);
 #else
 int send_response(int client_socket, char *path);
-#endif // MULTI_TH
-
+#endif  // MULTI_TH
 
 int send_file(int in_client_sock, char *in_file_path);
 int check_response_info(int in_sock, char *in_message);
