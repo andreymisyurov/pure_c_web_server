@@ -3,6 +3,7 @@
 
 #ifdef MULTI_TH
 #include "./../thread_pool/thpool.h"
+#include "./../struct.h"
 #endif  // MULTI_TH
 
 #include <arpa/inet.h>
@@ -14,7 +15,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "./../struct.h"
 
 #ifdef MULTI_TH
 typedef void (*func_ptr)(pair *);

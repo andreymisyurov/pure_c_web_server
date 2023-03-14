@@ -2,10 +2,9 @@
 
 #ifdef MULTI_TH
 void send_response(pair *in_pair) {
-  int cl_sock = in_pair->cl_sock;
-  char buff[BUFFER_SIZE];
-  memset(buff, 0, BUFFER_SIZE);
-  strcpy(buff, in_pair->path);
+  pthread_mutex_lock(&(in_pair->m_mutex));
+  int cl_sock = in_pair->m_cl_sock;
+  pthread_mutex_unlock(&(in_pair->m_mutex));
 
   char *client_message = calloc(BUFFER_SIZE, sizeof(char));
   if (!client_message) {
@@ -32,7 +31,7 @@ void send_response(pair *in_pair) {
     close(cl_sock);
     return;
   }
-  sprintf(full_path, "%s%s", buff, response_info.file);
+  sprintf(full_path, "%s%s", in_pair->m_path, response_info.file);
 
   if (!strcmp(response_info.type, "DELETE")) {
     remove_html(cl_sock, full_path);
@@ -49,9 +48,9 @@ void send_response(pair *in_pair) {
     return;
   }
 
-  send_file(in_pair->cl_sock, full_path);
+  send_file(cl_sock, full_path);
   free(full_path);
-  close(in_pair->cl_sock);
+  close(cl_sock);
   sleep(1);
 }
 

@@ -61,7 +61,12 @@ void listen_http(int in_server_sock, char *in_path, func_ptr in_send_file_foo) {
 
 #ifdef MULTI_TH
   threadpool thpool = thpool_init(sysconf(_SC_NPROCESSORS_ONLN));
-  pair temp = {0};
+  pair temp = {
+      .m_cl_sock = -1,
+      .m_path = {*in_path},
+      .m_mutex = PTHREAD_MUTEX_INITIALIZER,
+  };
+  strcpy(temp.m_path, in_path);
 #endif  // MULTI_TH
 
   while (1) {
@@ -73,8 +78,7 @@ void listen_http(int in_server_sock, char *in_path, func_ptr in_send_file_foo) {
     printf("Connection accepted\n");
 
 #ifdef MULTI_TH
-    temp.cl_sock = client_socket;
-    strcpy(temp.path, in_path);
+    temp.m_cl_sock = client_socket;
     thpool_add_work(thpool, (void (*)(void *))in_send_file_foo, &temp);
     printf("Количество потоков в работе %d\n",
            thpool_num_threads_working(thpool));

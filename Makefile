@@ -45,7 +45,7 @@ clean:
 
 # goals for test multi-threading
 run_multi: build_multi
-	./server.out
+	./server.out $(ARGS)
 
 build_multi:
 	$(CC) -D MULTI_TH \
